@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import type { Product, WishlistItem } from "@shared/schema";
+import type { Product } from "@shared/schema";
+import { useLocation } from "wouter";
 
 interface ProductCardProps {
   product: Product;
@@ -15,13 +16,8 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { user, signInWithGoogle } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
 
-  const { data: wishlistItems = [] } = useQuery<WishlistItem[]>({
-    queryKey: ["/api/wishlist"],
-    enabled: !!user,
-  });
-
-  const isInWishlist = wishlistItems.some((item) => item.productId === product.id);
   const isOutOfStock = product.stock === 0;
 
   const addToCartMutation = useMutation({
@@ -48,28 +44,23 @@ export function ProductCard({ product }: ProductCardProps) {
     },
   });
 
-  const toggleWishlistMutation = useMutation({
+  const addToCartAndGoMutation = useMutation({
     mutationFn: async () => {
       if (!user) {
         await signInWithGoogle();
         return;
       }
-      if (isInWishlist) {
-        const item = wishlistItems.find((i) => i.productId === product.id);
-        if (item) {
-          return apiRequest("DELETE", `/api/wishlist/${item.id}`, undefined);
-        }
-      } else {
-        return apiRequest("POST", "/api/wishlist", { productId: product.id });
-      }
+      return apiRequest("POST", "/api/cart", { productId: product.id, quantity: 1 });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/wishlist"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      navigate("/cart");
+    },
+    onError: (error: Error) => {
       toast({
-        title: isInWishlist ? "Removed from wishlist" : "Added to wishlist",
-        description: isInWishlist
-          ? `${product.name} has been removed from your wishlist.`
-          : `${product.name} has been added to your wishlist.`,
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
       });
     },
   });
@@ -113,13 +104,13 @@ export function ProductCard({ product }: ProductCardProps) {
             size="icon"
             variant="secondary"
             className="absolute top-2 left-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-            onClick={() => toggleWishlistMutation.mutate()}
-            disabled={isOutOfStock || toggleWishlistMutation.isPending}
-            aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
-            title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+            onClick={() => addToCartAndGoMutation.mutate()}
+            disabled={isOutOfStock || addToCartAndGoMutation.isPending}
+            aria-label="Add to cart"
+            title="Add to cart"
             data-testid={`button-wishlist-${product.id}`}
           >
-            <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current text-destructive" : ""}`} />
+            <Heart className="h-4 w-4" />
           </Button>
         </div>
 
