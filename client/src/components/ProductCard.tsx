@@ -112,9 +112,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <Button
             size="icon"
             variant="secondary"
-            className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 left-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
             onClick={() => toggleWishlistMutation.mutate()}
             disabled={isOutOfStock || toggleWishlistMutation.isPending}
+            aria-label={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+            title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
             data-testid={`button-wishlist-${product.id}`}
           >
             <Heart className={`h-4 w-4 ${isInWishlist ? "fill-current text-destructive" : ""}`} />
