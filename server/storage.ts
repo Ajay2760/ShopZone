@@ -59,6 +59,17 @@ export class MemStorage implements IStorage {
     this.orders = new Map();
     this.addresses = new Map();
     this.seedData();
+
+    // Optionally seed from Fakestore API in the background
+    // Set SEED_FAKESTORE=true to enable
+    if (process.env.SEED_FAKESTORE === "true") {
+      // Fire-and-forget; seeding will merge into in-memory data
+      // without blocking server startup
+      this.seedFromFakestore().catch((err) => {
+        // Non-fatal: keep local seed if remote fails
+        console.error("Fakestore seeding failed:", err);
+      });
+    }
   }
 
   private seedData() {
@@ -398,3 +409,87 @@ export class MemStorage implements IStorage {
 }
 
 export const storage = new MemStorage();
+
+// Helper utilities (kept module-local)
+function slugify(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
+type FakeStoreProduct = {
+  id: number;
+  title: string;
+  price: number; // USD
+  description: string;
+  category: string;
+  image: string;
+  rating?: { rate?: number; count?: number };
+};
+
+declare global {
+  // Ensure TypeScript knows about fetch in Node 20+
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  var fetch: typeof globalThis.fetch;
+}
+
+// Extend MemStorage with Fakestore seeding capability
+// We attach to prototype to keep class definition concise above
+MemStorage.prototype.seedFromFakestore = async function seedFromFakestore(this: MemStorage) {
+  const baseUrl = process.env.FAKESTORE_API_URL || "https://fakestoreapi.com";
+
+  // Fetch categories
+  const categoriesRes = await fetch(`${baseUrl}/products/categories`);
+  if (!categoriesRes.ok) throw new Error(`Failed to fetch categories: ${categoriesRes.status}`);
+  const categoryNames = (await categoriesRes.json()) as string[];
+
+  // Insert categories if missing
+  const existingCategorySlugs = new Set(Array.from(this.categories.values()).map((c) => c.slug));
+  for (const name of categoryNames) {
+    const slug = slugify(name);
+    if (existingCategorySlugs.has(slug)) continue;
+    const id = `${this.categories.size + 1}-${slug}`;
+    const category: Category = { id, name, slug };
+    this.categories.set(id, category);
+  }
+
+  // Build a reverse lookup from slug to id
+  const slugToCategoryId = new Map<string, string>();
+  for (const category of this.categories.values()) {
+    slugToCategoryId.set(category.slug, category.id);
+  }
+
+  // Fetch products
+  const productsRes = await fetch(`${baseUrl}/products`);
+  if (!productsRes.ok) throw new Error(`Failed to fetch products: ${productsRes.status}`);
+  const fakeProducts = (await productsRes.json()) as FakeStoreProduct[];
+
+  // Insert/merge products
+  for (const fp of fakeProducts) {
+    const categorySlug = slugify(fp.category);
+    const categoryId = slugToCategoryId.get(categorySlug);
+    if (!categoryId) continue; // Skip products with unknown category
+
+    const rupeePrice = Math.max(99, Math.round(fp.price * 100)); // approx convert to INR format
+    const originalPrice = Math.round(rupeePrice * 1.2);
+    const stockFromCount = fp.rating?.count ?? 0;
+    // Create a stable stock between 0-50 with some zeros
+    const stock = (stockFromCount % 7 === 0) ? 0 : Math.max(0, (stockFromCount % 50));
+
+    const product: Product = {
+      id: `fs-${fp.id}`,
+      name: fp.title,
+      description: fp.description,
+      price: rupeePrice,
+      originalPrice,
+      categoryId,
+      stock,
+      imageUrl: fp.image,
+      rating: fp.rating?.rate ?? 0,
+      reviewCount: fp.rating?.count ?? 0,
+    };
+
+    this.products.set(product.id, product);
+  }
+};
