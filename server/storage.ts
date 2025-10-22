@@ -18,27 +18,33 @@ export interface IStorage {
   getProducts(): Promise<Product[]>;
   getProduct(id: string): Promise<Product | undefined>;
   createProduct(product: InsertProduct): Promise<Product>;
-  updateProduct(id: string, updates: Partial<Product>): Promise<Product | undefined>;
-  
+  updateProduct(
+    id: string,
+    updates: Partial<Product>
+  ): Promise<Product | undefined>;
+
   getCategories(): Promise<Category[]>;
-  
+
   getCartItems(userId: string): Promise<CartItem[]>;
   getCartItem(id: string): Promise<CartItem | undefined>;
   createCartItem(item: InsertCartItem): Promise<CartItem>;
   updateCartItem(id: string, quantity: number): Promise<CartItem | undefined>;
   deleteCartItem(id: string): Promise<boolean>;
   clearCart(userId: string): Promise<void>;
-  
+
   getWishlistItems(userId: string): Promise<WishlistItem[]>;
   getWishlistItem(id: string): Promise<WishlistItem | undefined>;
   createWishlistItem(item: InsertWishlistItem): Promise<WishlistItem>;
   deleteWishlistItem(id: string): Promise<boolean>;
-  
+
   getOrders(userId: string): Promise<Order[]>;
   getAllOrders(): Promise<Order[]>;
   createOrder(order: InsertOrder): Promise<Order>;
-  updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order | undefined>;
-  
+  updateOrderStatus(
+    orderId: string,
+    status: OrderStatus
+  ): Promise<Order | undefined>;
+
   getAddresses(userId: string): Promise<Address[]>;
   createAddress(address: InsertAddress): Promise<Address>;
 }
@@ -76,24 +82,28 @@ export class MemStorage implements IStorage {
       {
         id: "1",
         name: "Wireless Bluetooth Headphones",
-        description: "Premium noise-cancelling headphones with 30-hour battery life",
+        description:
+          "Premium noise-cancelling headphones with 30-hour battery life",
         price: 2999,
         originalPrice: 4999,
         categoryId: "1",
         stock: 15,
-        imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500",
         rating: 4.5,
         reviewCount: 234,
       },
       {
         id: "2",
         name: "Smart Watch Series 7",
-        description: "Advanced fitness tracking with heart rate monitor and GPS",
+        description:
+          "Advanced fitness tracking with heart rate monitor and GPS",
         price: 12999,
         originalPrice: 15999,
         categoryId: "1",
         stock: 8,
-        imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
         rating: 4.8,
         reviewCount: 456,
       },
@@ -105,7 +115,8 @@ export class MemStorage implements IStorage {
         originalPrice: 2499,
         categoryId: "2",
         stock: 25,
-        imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500",
         rating: 4.3,
         reviewCount: 128,
       },
@@ -116,7 +127,8 @@ export class MemStorage implements IStorage {
         price: 1899,
         categoryId: "1",
         stock: 0,
-        imageUrl: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1527814050087-3793815479db?w=500",
         rating: 4.6,
         reviewCount: 89,
       },
@@ -128,18 +140,21 @@ export class MemStorage implements IStorage {
         originalPrice: 999,
         categoryId: "2",
         stock: 50,
-        imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500",
         rating: 4.2,
         reviewCount: 312,
       },
       {
         id: "6",
         name: "Stainless Steel Water Bottle",
-        description: "Insulated bottle keeps drinks cold for 24 hours, hot for 12 hours",
+        description:
+          "Insulated bottle keeps drinks cold for 24 hours, hot for 12 hours",
         price: 799,
         categoryId: "3",
         stock: 35,
-        imageUrl: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500",
         rating: 4.7,
         reviewCount: 178,
       },
@@ -151,19 +166,22 @@ export class MemStorage implements IStorage {
         originalPrice: 6999,
         categoryId: "1",
         stock: 12,
-        imageUrl: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500",
         rating: 4.9,
         reviewCount: 267,
       },
       {
         id: "8",
         name: "Running Shoes Pro",
-        description: "Lightweight running shoes with advanced cushioning technology",
+        description:
+          "Lightweight running shoes with advanced cushioning technology",
         price: 3999,
         originalPrice: 5999,
         categoryId: "5",
         stock: 20,
-        imageUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
         rating: 4.4,
         reviewCount: 543,
       },
@@ -174,7 +192,8 @@ export class MemStorage implements IStorage {
         price: 1299,
         categoryId: "5",
         stock: 30,
-        imageUrl: "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=500",
         rating: 4.5,
         reviewCount: 198,
       },
@@ -185,7 +204,8 @@ export class MemStorage implements IStorage {
         price: 899,
         categoryId: "4",
         stock: 18,
-        imageUrl: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=500",
         rating: 4.6,
         reviewCount: 92,
       },
@@ -197,7 +217,8 @@ export class MemStorage implements IStorage {
         originalPrice: 7999,
         categoryId: "3",
         stock: 10,
-        imageUrl: "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=500",
         rating: 4.3,
         reviewCount: 145,
       },
@@ -209,7 +230,8 @@ export class MemStorage implements IStorage {
         originalPrice: 4999,
         categoryId: "1",
         stock: 22,
-        imageUrl: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500",
         rating: 4.7,
         reviewCount: 421,
       },
@@ -220,7 +242,8 @@ export class MemStorage implements IStorage {
         price: 2499,
         categoryId: "2",
         stock: 0,
-        imageUrl: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500",
         rating: 4.4,
         reviewCount: 167,
       },
@@ -232,7 +255,8 @@ export class MemStorage implements IStorage {
         originalPrice: 2499,
         categoryId: "1",
         stock: 40,
-        imageUrl: "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=500",
         rating: 4.6,
         reviewCount: 289,
       },
@@ -243,7 +267,8 @@ export class MemStorage implements IStorage {
         price: 4499,
         categoryId: "3",
         stock: 15,
-        imageUrl: "https://images.unsplash.com/photo-1585515320310-259814833d62?w=500",
+        imageUrl:
+          "https://plus.unsplash.com/premium_photo-1672192166833-c8ae84e5e127?w=500",
         rating: 4.8,
         reviewCount: 356,
       },
@@ -255,7 +280,8 @@ export class MemStorage implements IStorage {
         originalPrice: 3999,
         categoryId: "2",
         stock: 28,
-        imageUrl: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500",
+        imageUrl:
+          "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500",
         rating: 4.5,
         reviewCount: 234,
       },
@@ -279,10 +305,13 @@ export class MemStorage implements IStorage {
     return product;
   }
 
-  async updateProduct(id: string, updates: Partial<Product>): Promise<Product | undefined> {
+  async updateProduct(
+    id: string,
+    updates: Partial<Product>
+  ): Promise<Product | undefined> {
     const product = this.products.get(id);
     if (!product) return undefined;
-    
+
     const updated = { ...product, ...updates };
     this.products.set(id, updated);
     return updated;
@@ -293,7 +322,9 @@ export class MemStorage implements IStorage {
   }
 
   async getCartItems(userId: string): Promise<CartItem[]> {
-    return Array.from(this.cartItems.values()).filter((item) => item.userId === userId);
+    return Array.from(this.cartItems.values()).filter(
+      (item) => item.userId === userId
+    );
   }
 
   async getCartItem(id: string): Promise<CartItem | undefined> {
@@ -302,7 +333,9 @@ export class MemStorage implements IStorage {
 
   async createCartItem(insertItem: InsertCartItem): Promise<CartItem> {
     const existing = Array.from(this.cartItems.values()).find(
-      (item) => item.userId === insertItem.userId && item.productId === insertItem.productId
+      (item) =>
+        item.userId === insertItem.userId &&
+        item.productId === insertItem.productId
     );
 
     if (existing) {
@@ -317,7 +350,10 @@ export class MemStorage implements IStorage {
     return item;
   }
 
-  async updateCartItem(id: string, quantity: number): Promise<CartItem | undefined> {
+  async updateCartItem(
+    id: string,
+    quantity: number
+  ): Promise<CartItem | undefined> {
     const item = this.cartItems.get(id);
     if (!item) return undefined;
 
@@ -338,14 +374,18 @@ export class MemStorage implements IStorage {
   }
 
   async getWishlistItems(userId: string): Promise<WishlistItem[]> {
-    return Array.from(this.wishlistItems.values()).filter((item) => item.userId === userId);
+    return Array.from(this.wishlistItems.values()).filter(
+      (item) => item.userId === userId
+    );
   }
 
   async getWishlistItem(id: string): Promise<WishlistItem | undefined> {
     return this.wishlistItems.get(id);
   }
 
-  async createWishlistItem(insertItem: InsertWishlistItem): Promise<WishlistItem> {
+  async createWishlistItem(
+    insertItem: InsertWishlistItem
+  ): Promise<WishlistItem> {
     const id = randomUUID();
     const item: WishlistItem = { ...insertItem, id };
     this.wishlistItems.set(id, item);
@@ -357,7 +397,9 @@ export class MemStorage implements IStorage {
   }
 
   async getOrders(userId: string): Promise<Order[]> {
-    return Array.from(this.orders.values()).filter((order) => order.userId === userId);
+    return Array.from(this.orders.values()).filter(
+      (order) => order.userId === userId
+    );
   }
 
   async getAllOrders(): Promise<Order[]> {
@@ -376,7 +418,10 @@ export class MemStorage implements IStorage {
     return order;
   }
 
-  async updateOrderStatus(orderId: string, status: OrderStatus): Promise<Order | undefined> {
+  async updateOrderStatus(
+    orderId: string,
+    status: OrderStatus
+  ): Promise<Order | undefined> {
     const order = this.orders.get(orderId);
     if (!order) return undefined;
 
@@ -386,7 +431,9 @@ export class MemStorage implements IStorage {
   }
 
   async getAddresses(userId: string): Promise<Address[]> {
-    return Array.from(this.addresses.values()).filter((addr) => addr.userId === userId);
+    return Array.from(this.addresses.values()).filter(
+      (addr) => addr.userId === userId
+    );
   }
 
   async createAddress(insertAddress: InsertAddress): Promise<Address> {
